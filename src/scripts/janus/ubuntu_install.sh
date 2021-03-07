@@ -1,7 +1,7 @@
 # 作者: 石晓旭
 # 日期：2021年02月01日
 # 描述：自动编译安装Janus
-# 在线安装: sudo /bin/bash -c "$(https://files.shixiaoxu.com/scripts/janus/ubuntu_install.sh)"
+# 在线安装: sudo /bin/bash -c "$(curl -fsSL https://files.shixiaoxu.com/scripts/janus/ubuntu_install.sh)"
 
 #!/bin/bash
 

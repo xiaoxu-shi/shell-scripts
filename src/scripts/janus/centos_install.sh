@@ -1,6 +1,7 @@
 # 作者: 石晓旭
 # 日期：2021年02月01日
 # 描述：自动编译安装Janus
+# 在线安装: /bin/bash -c "$(curl -fsSL https://files.shixiaoxu.com/scripts/janus/centos_install.sh)"
 #!/bin/bash
 
 Janus_0_10_9_Url=https://files.shixiaoxu.com/packages/janus/janus-gateway-0.10.9.tar.gz
@@ -141,7 +142,7 @@ echo "libsofiasip_pkg   : ${libsofiasip_pkg} ..."
 export PKG_CONFIG_PATH=${BuildPkgCfgDir}
 export LD_LIBRARY_PATH=${BuildLDLibDir}
 export LD_RUN_PATH=${BuildLDRunDir}
-exit
+
 if [ ! -d "$BuildTempDir" ]; then
     mkdir -p $BuildTempDir
 fi
@@ -281,6 +282,11 @@ fi
 tar -xzvf ${Janus_0_10_9_Tar}
 cd ${JanusCurrentPkg}
 ./autogen.sh
-./configure --prefix=${BuildOutDir} \
---enable-openssl --enable-plugin-duktape -enable-post-processing
-make && make install
+if [ $BuildEnablePostProcessing == 1 ]; then
+    ./configure --prefix=${BuildOutDir} --enable-openssl --enable-plugin-duktape --enable-post-processing
+else
+    ./configure --prefix=${BuildOutDir} --enable-openssl --enable-plugin-duktape
+fi
+
+sudo make -j 4
+sudo make install
