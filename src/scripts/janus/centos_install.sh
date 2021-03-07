@@ -40,14 +40,62 @@ JanusCurrentTar=${Janus_0_10_9_Tar}
 JanusCurrentPkg=${Janus_0_10_9_Pkg}
 
 BuildBaseDir=`pwd`
-BuildTempDir=${BuildBaseDir}/.temp
+BuildTempDir=${BuildBaseDir}/temp
 BuildCodeDir=${BuildBaseDir}/${JanusCurrentPkg}
-BuildOutDir="/opt/janus"
-BuildDepsOutDir=${BuildOutDir}
-BuildLDLibDir="${LD_RUN_PATH}:${BuildDepsOutDir}/lib:${BuildDepsOutDir}/lib64"
+
+# janus depends install directory.
+BuildDepsOutDir=""
+_BUILD_JANUS_DEPS_INSTALL_DIR=1
+export BUILD_JANUS_DEPS_INSTALL_DIR=1
+echo " "
+echo "Janus depends install directory enum :"
+echo " 1) /usr"
+echo " 2) /usr/local"
+echo " 3) /opt/janus"
+read -p "Please select the janus depends install directory for this instance: [${_BUILD_JANUS_DEPS_INSTALL_DIR}] " BUILD_JANUS_DEPS_INSTALL_DIR
+if [[ $BUILD_JANUS_DEPS_INSTALL_DIR -lt 1 ]] || [[ $BUILD_JANUS_DEPS_INSTALL_DIR -gt 3 ]] ; then
+    echo "Selecting default: $_BUILD_JANUS_DEPS_INSTALL_DIR"
+    BUILD_JANUS_DEPS_INSTALL_DIR=${_BUILD_JANUS_DEPS_INSTALL_DIR}
+fi
+echo $BUILD_JANUS_DEPS_INSTALL_DIR
+if [ $BUILD_JANUS_DEPS_INSTALL_DIR -eq 1 ] ; then
+    BuildDepsOutDir="/usr"
+elif [ $BUILD_JANUS_DEPS_INSTALL_DIR -eq 2 ] ; then
+    BuildDepsOutDir="/usr/local"
+elif [ $BUILD_JANUS_DEPS_INSTALL_DIR -eq 3 ] ; then
+    BuildDepsOutDir="/opt/janus"
+else
+    exit
+fi
+
+# Janus install directory.
+BuildOutDir=""
+_BUILD_JANUS_INSTALL_DIR=1
+export BUILD_JANUS_INSTALL_DIR=1
+echo " "
+echo "Janus install directory enum :"
+echo " 1) /opt/janus"
+echo " 2) /usr/local"
+echo " 3) /usr"
+read -p "Please select the janus install directory for this instance: [${_BUILD_JANUS_INSTALL_DIR}] " BUILD_JANUS_INSTALL_DIR
+if [[ $BUILD_JANUS_INSTALL_DIR -lt 1 ]] || [[ $BUILD_JANUS_INSTALL_DIR -gt 3 ]] ; then
+    echo "Selecting default: $_BUILD_JANUS_INSTALL_DIR"
+    BUILD_JANUS_INSTALL_DIR=${_BUILD_JANUS_INSTALL_DIR}
+fi
+echo $BUILD_JANUS_INSTALL_DIR
+if [ $BUILD_JANUS_INSTALL_DIR -eq 1 ] ; then
+    BuildOutDir="/opt/janus"
+elif [ $BUILD_JANUS_INSTALL_DIR -eq 2 ] ; then
+    BuildOutDir="/usr/local"
+elif [ $BUILD_JANUS_INSTALL_DIR -eq 3 ] ; then
+    BuildOutDir="/usr"
+else
+    exit
+fi
+
+BuildLDLibDir="${LD_LIBRARY_PATH}:${BuildDepsOutDir}/lib:${BuildDepsOutDir}/lib64"
 BuildLDRunDir="${LD_RUN_PATH}:${BuildDepsOutDir}/lib:${BuildDepsOutDir}/lib64"
 BuildPkgCfgDir="${PKG_CONFIG_PATH}:${BuildDepsOutDir}/lib/pkgconfig:${BuildDepsOutDir}/lib64/pkgconfig"
-
 # print path
 echo "JanusCurrentUrl   : ${JanusCurrentUrl} ..."
 echo "JanusCurrentTar   : ${JanusCurrentTar} ..."
@@ -93,7 +141,7 @@ echo "libsofiasip_pkg   : ${libsofiasip_pkg} ..."
 export PKG_CONFIG_PATH=${BuildPkgCfgDir}
 export LD_LIBRARY_PATH=${BuildLDLibDir}
 export LD_RUN_PATH=${BuildLDRunDir}
-
+exit
 if [ ! -d "$BuildTempDir" ]; then
     mkdir -p $BuildTempDir
 fi
