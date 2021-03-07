@@ -6,8 +6,32 @@
 # install required software package
 BUILD_BASE_DIR=$(pwd)
 BUILD_TEMP_DIR=$BUILD_BASE_DIR/temp
-#BUILD_OUT_DIR=$BUILD_BASE_DIR/out
 BUILD_OUT_DIR=/usr
+
+_BUILD_FFMPEG_INSTALL_DIR=1
+export BUILD_FFMPEG_INSTALL_DIR=1
+echo " "
+echo "FFMPEG install directory enum :"
+echo " 1) /usr"
+echo " 2) /usr/local"
+echo " 3) /opt/janus"
+read -p "Please select the ffmpeg install directory for this instance: [${_BUILD_FFMPEG_INSTALL_DIR}] " BUILD_FFMPEG_INSTALL_DIR
+if [[ $BUILD_FFMPEG_INSTALL_DIR -lt 1 ]] || [[ $BUILD_FFMPEG_INSTALL_DIR -gt 3 ]] ; then
+    echo "Selecting default: $_BUILD_FFMPEG_INSTALL_DIR"
+    BUILD_FFMPEG_INSTALL_DIR=${_BUILD_FFMPEG_INSTALL_DIR}
+fi
+
+if [ $BUILD_FFMPEG_INSTALL_DIR -eq 1 ] ; then
+    BUILD_OUT_DIR="/usr"
+elif [ $BUILD_FFMPEG_INSTALL_DIR -eq 2 ] ; then
+    BUILD_OUT_DIR="/usr/local"
+elif [ $BUILD_FFMPEG_INSTALL_DIR -eq 3 ] ; then
+    BUILD_OUT_DIR="/opt/janus"
+else
+    exit
+fi
+
+echo "install directory : $BUILD_OUT_DIR"
 
 export PATH="$PATH:$BUILD_OUT_DIR/bin"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$BUILD_OUT_DIR/lib:$BUILD_OUT_DIR/lib64"
